@@ -7,15 +7,15 @@ namespace TestModule02
     [TestClass]
     public class UnitTest_LargestNumber
     {
-        private MethodLibrary.MethodLibrary o = new MethodLibrary.MethodLibrary();
+        private LargestFinder finder = new LargestFinder();
 
         public TestContext TestContext { get; set; }
 
         [DataTestMethod]
         [DataSource("Microsoft.VisualStudio.TestTools.DataSource.CSV",
-            "|DataDirectory|\\ut_lab07.csv",
-            "ut_lab07#csv",
-            DataAccessMethod.Sequential)]
+                    "|DataDirectory|\\ut_lab07.csv",
+                    "ut_lab07#csv",
+                    DataAccessMethod.Sequential)]
         public void TestLargestNumber_FromCSV()
         {
             string input = TestContext.DataRow["input"].ToString().Trim();
@@ -23,7 +23,6 @@ namespace TestModule02
 
             int[] arr = null;
 
-            // Xử lý input đặc biệt
             if (input.Equals("null", StringComparison.OrdinalIgnoreCase))
             {
                 arr = null;
@@ -35,58 +34,34 @@ namespace TestModule02
             else
             {
                 string cleaned = input.Replace("[", "").Replace("]", "").Trim();
-
-                try
-                {
-                    arr = cleaned.Split(',')
-                                 .Where(s => !string.IsNullOrWhiteSpace(s))
-                                 .Select(s => int.Parse(s.Trim())) // Nếu có 2147483648 sẽ ném OverflowException
-                                 .ToArray();
-                }
-                catch (OverflowException)
-                {
-                    // Nếu expected yêu cầu Overflow thì xác nhận
-                    if (expected.Contains("Overflow"))
-                    {
-                        Assert.ThrowsException<OverflowException>(() =>
-                        {
-                            // ép lỗi lại để test pass
-                            long bigValue = 2147483648L; // > int.MaxValue
-                            int x = (int)bigValue;       // ném OverflowException
-                        }, $"Fail at input={input}, expected OverflowException");
-                        return;
-                    }
-                    else
-                    {
-                        throw; // nếu không khớp thì fail
-                    }
-                }
+                arr = cleaned.Split(',')
+                             .Where(s => !string.IsNullOrWhiteSpace(s))
+                             .Select(s => int.Parse(s.Trim()))
+                             .ToArray();
             }
 
-            // Kiểm tra exception theo expected
             if (expected.StartsWith("Exception"))
             {
-                if (expected.Contains("NullReference"))
+                if (expected.Contains("Argument"))
                 {
-                    Assert.ThrowsException<NullReferenceException>(() => o.Largest(arr),
-                        $"Fail at input={input}, expected NullReference");
+                    Assert.ThrowsException<ArgumentException>(() => finder.Largest(arr),
+                        $"Sai ở input={input}, expected ArgumentException");
                 }
-                else if (expected.Contains("Argument"))
+                else if (expected.Contains("NullReference"))
                 {
-                    Assert.ThrowsException<ArgumentException>(() => o.Largest(arr),
-                        $"Fail at input={input}, expected ArgumentException");
+                    Assert.ThrowsException<NullReferenceException>(() => finder.Largest(arr),
+                        $"Sai ở input={input}, expected NullReferenceException");
                 }
             }
             else
             {
-                // Trường hợp bình thường
-                int actual = o.Largest(arr);
-                Assert.AreEqual(int.Parse(expected), actual,
-                    $"Fail at input={input}, expected={expected}, actual={actual}");
+                int actual = finder.Largest(arr);
+                int expectedValue = int.Parse(expected);
+                Assert.AreEqual(expectedValue, actual,
+                    $"Sai ở input={input}, expected={expected}, actual={actual}");
             }
         }
 
-        // Test riêng overflow hợp lệ
         [TestMethod]
         public void TestLargestNumber_Overflow()
         {
@@ -95,9 +70,9 @@ namespace TestModule02
                 checked
                 {
                     long bigValue = 2147483648L; // > int.MaxValue
-                    int x = (int)bigValue;       // ném OverflowException
+                    int x = (int)bigValue;       // sẽ ném OverflowException
                 }
-            }, "Expected OverflowException for input > int.MaxValue");
+            }, "Expected OverflowException cho input > int.MaxValue");
         }
     }
 }

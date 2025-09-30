@@ -55,7 +55,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UT_Lab01.cs" />
     <Compile Include="UT_Lab03.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ut_lab07.cs" />
