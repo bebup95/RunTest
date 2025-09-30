@@ -53,6 +53,7 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Largest.cs" />
     <Compile Include="UT_Lab02.cs" />
     <Compile Include="UT_Lab03.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
